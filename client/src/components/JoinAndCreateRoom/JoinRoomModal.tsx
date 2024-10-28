@@ -6,12 +6,14 @@ import {
   ModalFooter,
   Button,
   Input,
+  Checkbox,
 } from "@nextui-org/react";
+import axios from "axios";
 import { useState } from "react";
 
 function JoinRoomModal({ isOpen, closeModel }) {
   const [credentials, setCredentials] = useState({ roomId: "", password: "" });
-
+  const [isSecured, setIsSecured] = useState(true);
   const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({ ...prev, roomId: e.target.value }));
   };
@@ -20,9 +22,30 @@ function JoinRoomModal({ isOpen, closeModel }) {
     setCredentials((prev) => ({ ...prev, password: e.target.value }));
   };
 
+  const handleCreateRoom = async () => {
+    try {
+      // Send roomId and password to the backend
+      const response = await axios.post("http://localhost:3000/api/rooms/join", {
+        roomId: credentials.roomId,
+        password: credentials.password,
+        isSecured : isSecured
+      });
+
+      if (response.status === 200) {
+        console.log("Room created successfully", response.data);
+        // Handle success actions here
+      }
+    } catch (error) {
+      console.error("Error creating room:", error);
+      // Handle error actions here
+    }
+  };
+  const handleSecureChange = () => {
+    setIsSecured(!isSecured);
+  };
   return (
     <div>
-      <Modal isOpen={isOpen} onOpenChange={closeModel} placement="center" >
+      <Modal isOpen={isOpen} onOpenChange={closeModel} placement="center">
         <ModalContent>
           {() => (
             <>
@@ -47,14 +70,16 @@ function JoinRoomModal({ isOpen, closeModel }) {
                   labelPlacement="inside"
                   value={credentials.password}
                   onChange={handlePasswordChange}
+                  isDisabled={!isSecured}
                 />
+                <Checkbox onClick={handleSecureChange}>
+                  No password
+                </Checkbox>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={closeModel}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={()=>{console.log({credentials})}}>
-                  Join
+                
+                <Button color="primary" onPress={handleCreateRoom}>
+                  {`Join ${!isSecured ? "Secure" : "Unsecure"} Room`}
                 </Button>
               </ModalFooter>
             </>

@@ -25,9 +25,10 @@ function CreateRoomModal({ isOpen, closeModel }) {
   const handleCreateRoom = async () => {
     try {
       // Send roomId and password to the backend
-      const response = await axios.post("http://localhost:3000/api/rooms", {
+      const response = await axios.post("http://localhost:3000/api/rooms/create", {
         roomId: credentials.roomId,
         password: credentials.password,
+        isSecured
       });
 
       if (response.status === 200) {
