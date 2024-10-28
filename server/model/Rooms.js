@@ -11,6 +11,11 @@ const RoomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isSecured : {
+    type: Boolean,
+    required : true,
+    default: true
+  }
 });
 
 module.exports = mongoose.model('Room', RoomSchema);
