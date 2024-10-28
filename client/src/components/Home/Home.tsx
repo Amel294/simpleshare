@@ -1,4 +1,4 @@
-import { Button, Input, Textarea } from "@nextui-org/react";
+import { Button,  Textarea } from "@nextui-org/react";
 import Nav from "../Navbar/Nav";
 import { useState } from "react";
 import CopyIcon from "../../assets/CopyIcon";
@@ -8,7 +8,7 @@ function Home() {
   const [text, setText] = useState("");
 
   const handleTextSubmit = () => {
-    setData([text, ...data]);
+    setData([text.trim(), ...data]);
     setText("");
   };
 
