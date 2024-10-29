@@ -11,7 +11,6 @@ function ExitRoom() {
         <Button
           as={Link}
           color="primary"
-          href="#"
           variant="flat"
           onPress={handleExitRoom}
         >
