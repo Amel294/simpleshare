@@ -4,10 +4,12 @@ import { persist, PersistStorage, devtools } from 'zustand/middleware';
 interface RoomState {
   roomId: string;
   password: string;
+  secure: boolean;
   inRoom: boolean;
   data: string[];
   setRoomId: (roomId: string) => void;
   setPassword: (password: string) => void;
+  setSecure: (secure: boolean) => void;
   setInRoom: (inRoom: boolean) => void;
   addData: (text: string) => void;
   clearRoomData: () => void;
@@ -32,13 +34,16 @@ const useRoomStore = create<RoomState>()(
       (set) => ({
         roomId: '',
         password: '',
+        secure: false,
         inRoom: false,
         data: [],
         setRoomId: (roomId) => set(() => ({ roomId }), false, 'room/setRoomId'),
         setPassword: (password) => set(() => ({ password }), false, 'room/setPassword'),
+        setSecure: (secure) => set(() => ({ secure }), false, 'room/setSecure'),
         setInRoom: (inRoom) => set(() => ({ inRoom }), false, 'room/setInRoom'),
         addData: (text) => set((state) => ({ data: [...state.data, text] }), false, 'room/addData'),
-        clearRoomData: () => set(() => ({ roomId: '', password: '', inRoom: false, data: [] }), false, 'room/clearRoomData'),
+        clearRoomData: () =>
+          set(() => ({ roomId: '', password: '', secure: false, inRoom: false, data: [] }), false, 'room/clearRoomData'),
       }),
       {
         name: 'room-store',

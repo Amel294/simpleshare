@@ -12,39 +12,40 @@ import axios from "axios";
 import { useState } from "react";
 import useRoomStore from "../../store";
 
-function JoinRoomModal({ isOpen, closeModel }) {
-  const [credentials, setCredentials] = useState({ roomId: "", password: "" });
-  const [isSecured, setIsSecured] = useState(true);
-  const {setInRoom} = useRoomStore()
-  const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prev) => ({ ...prev, roomId: e.target.value }));
+function JoinRoomModal( { isOpen, closeModel } ) {
+  const [credentials, setCredentials] = useState( { roomId: "", password: "" } );
+  const [passwordIsVisible, setPasswordIsVisible] = useState( true );
+  const { setInRoom,setSecure } = useRoomStore()
+  const handleRoomIdChange = ( e: React.ChangeEvent<HTMLInputElement> ) => {
+    setCredentials( ( prev ) => ( { ...prev, roomId: e.target.value } ) );
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prev) => ({ ...prev, password: e.target.value }));
+  const handlePasswordChange = ( e: React.ChangeEvent<HTMLInputElement> ) => {
+    setCredentials( ( prev ) => ( { ...prev, password: e.target.value } ) );
   };
-  const {setRoomId} = useRoomStore()
+  const { setRoomId } = useRoomStore()
   const handleCreateRoom = async () => {
     try {
       // Send roomId and password to the backend
-      const response = await axios.post("http://localhost:3000/api/rooms/join", {
+      const response = await axios.post( "http://localhost:3000/api/rooms/join", {
         roomId: credentials.roomId,
         password: credentials.password,
-        isSecured : isSecured
-      });
+        passwordIsVisible: passwordIsVisible
+      } );
 
-      if (response.status === 200) {
-        console.log("Room created successfully", response.data);
-        setRoomId(response.data.roomId)
-        setInRoom(true)
+      if ( response.status === 200 ) {
+        console.log( "Room created successfully", response.data );
+        setRoomId( response.data.roomId )
+        setInRoom( true )
+        setSecure(response.data.secure)
       }
-    } catch (error) {
-      console.error("Error creating room:", error);
+    } catch ( error ) {
+      console.error( "Error creating room:", error );
       // Handle error actions here
     }
   };
-  const handleSecureChange = () => {
-    setIsSecured(!isSecured);
+  const handlePasswordVisibility = () => {
+    setPasswordIsVisible( !passwordIsVisible );
   };
   return (
     <div>
@@ -73,16 +74,16 @@ function JoinRoomModal({ isOpen, closeModel }) {
                   labelPlacement="inside"
                   value={credentials.password}
                   onChange={handlePasswordChange}
-                  isDisabled={!isSecured}
+                  isDisabled={!passwordIsVisible}
                 />
-                <Checkbox onClick={handleSecureChange}>
+                <Checkbox onClick={handlePasswordVisibility}>
                   No password
                 </Checkbox>
               </ModalBody>
               <ModalFooter>
-                
-                <Button color="primary" onPress={handleCreateRoom}>
-                  {`Join ${!isSecured ? "Secure" : "Unsecure"} Room`}
+
+                <Button color="primary" onClick={handleCreateRoom}>
+                  {`Join ${ !passwordIsVisible ? "Secure" : "Unsecure" } Room`}
                 </Button>
               </ModalFooter>
             </>

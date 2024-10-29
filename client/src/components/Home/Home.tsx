@@ -6,11 +6,12 @@ import useRoomStore from "../../store";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function Home() {
   const [data, setData] = useState( [] );
   const [text, setText] = useState( "" );
-  const { roomId, password, setPassword } = useRoomStore(); // Added password from the store
+  const { roomId, password, setPassword,secure } = useRoomStore(); 
   const [isVisible, setIsVisible] = useState( false );
 
   const handleTextSubmit = () => {
@@ -23,31 +24,37 @@ function Home() {
   // Copy the room ID to the clipboard
   const handleRoomCodeCopy = () => {
     navigator.clipboard.writeText( roomId ).then( () => {
-      alert( "Room ID copied to clipboard" );
+      toast.success( 'Room ID copied!' )
     } );
   };
   // Copy the password to the clipboard
   const handlePasswordCopy = () => {
     if ( isVisible ) {
       navigator.clipboard.writeText( password ).then( () => {
-        alert( "Password copied to clipboard" );
+        toast.success( 'Password copied!' )
       } );
     }
   };
   const handleRequestPassword = async () => {
     try {
-      alert( "clicked" )
+      toast.success( 'Password fetched!' )
       // Send roomId and password to the backend
       const response = await axios.get( `http://localhost:3000/api/rooms/${ roomId }/password` );
 
       if ( response.status === 200 ) {
         setPassword( response.data.password )
+
       }
     } catch ( error ) {
       console.error( "Error creating room:", error );
       // Handle error actions here
     }
   };
+  const handleItemCopy = ( item ) => {
+    navigator.clipboard.writeText( item )
+    toast.success( 'Copied!', { duration: 500 } )
+  }
+
   return (
     <>
       <Nav />
@@ -56,7 +63,7 @@ function Home() {
         <div className="sticky top-10 bg-white z-10">
           <div className="flex flex-col pb-2">
             <div className="flex flex-row gap-4 justify-end ">
-              <div className="md:max-w-[40%] ">
+              <div className=" ">
                 <Input
                   type="text"
                   label="Room Id"
@@ -69,46 +76,55 @@ function Home() {
                       onClick={handleRoomCodeCopy}
                       aria-label="copy room ID"
                     >
-                      Copy
+                      <CopyIcon className="w-4" />
                     </button>
                   }
                   isReadOnly
                 />
               </div>
-              <div className="md:max-w-[40%]">
+              {
+                secure && <div className="">
                 <Input
                   type="text"
                   label="Password"
                   placeholder={isVisible ? password : "******"}
                   labelPlacement="outside"
                   endContent={
-                    <>
-                      <button
-                        className="focus:outline-none flex gap-3"
-                        type="button"
-                        onClick={toggleVisibility}
-                        aria-label="toggle password visibility"
-                      >
+                    <div className="flex gap-3 items-center">
+                      <div style={{ width: '24px' }}>
                         {isVisible && (
                           <button
                             className="focus:outline-none"
                             type="button"
                             onClick={handlePasswordCopy}
+                            aria-label="copy password"
                           >
-                            Copy
+                            <CopyIcon className="w-4 pt-[6px] flex" />
                           </button>
                         )}
+                      </div>
+                      <button
+                        className="focus:outline-none"
+                        type="button"
+                        onClick={toggleVisibility}
+                        aria-label="toggle password visibility"
+                      >
                         {isVisible ? (
-                          <EyeSlashFilledIcon className="text-2xl text-default-400 " />
+                          <EyeSlashFilledIcon className="text-2xl text-default-400" />
                         ) : (
-                          <EyeFilledIcon className="text-2xl text-default-400 " onClick={handleRequestPassword} />
+                          <EyeFilledIcon
+                            className="text-2xl text-default-400"
+                            onClick={handleRequestPassword}
+                          />
                         )}
                       </button>
-                    </>
+                    </div>
                   }
                   isReadOnly
                 />
               </div>
+              }
+              
             </div>
           </div>
 
@@ -141,9 +157,9 @@ function Home() {
                 className="bg-transparent"
                 variant="bordered"
                 endContent={<CopyIcon className="w-4" />}
-                onClick={() => navigator.clipboard.writeText( item )}
+                onClick={() => handleItemCopy( item )}
               >
-                Copy
+
               </Button>
             </div>
           ) )}
