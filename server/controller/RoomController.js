@@ -47,3 +47,21 @@ exports.joinRoom = async (req, res) => {
     res.status(500).json({ message: "Failed to join room", error });
   }
 };
+
+exports.getRoomPassword = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    console.log(roomId)
+    // Find the room by ID
+    const room = await Rooms.findOne({ roomId });
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    // Return the password
+    res.status(200).json({ password: room.password });
+  } catch (error) {
+    console.error("Error retrieving room password:", error);
+    res.status(500).json({ message: "Failed to retrieve room password", error });
+  }
+};
