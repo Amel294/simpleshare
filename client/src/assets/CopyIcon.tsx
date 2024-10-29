@@ -1,21 +1,7 @@
+import * as React from "react"
 const CopyIcon = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={800}
-    height={800}
-    viewBox="0 0 24 24"
-    {...props}
-  >
-    <path
-      fill="#0f0f0f0"
-      fillRule="evenodd"
-      d="M21 8a3 3 0 0 0-3-3h-8a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8Zm-2 0a1 1 0 0 0-1-1h-8a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V8Z"
-      clipRule="evenodd"
-    />
-    <path
-      fill="#0F0F0F"
-      d="M6 3h10a1 1 0 1 0 0-2H6a3 3 0 0 0-3 3v14a1 1 0 1 0 2 0V4a1 1 0 0 1 1-1Z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" {...props}>
+    <path d="M208 0h124.1C344.8 0 357 5.1 366 14.1L433.9 82c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64v256h192v-32h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z" />
   </svg>
 )
 export default CopyIcon
