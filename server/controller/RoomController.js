@@ -4,17 +4,19 @@ const Rooms = require("../model/Rooms");
 
 exports.createRoom = async (req, res) => {
   try {
-    const { roomId, password,isSecured } = req.body;
-    console.log(req.body); // Check if data is received correctly
-
-    // Check if the room already exists
+    const { roomId, password, isSecured } = req.body;
+    console.log(req.body); 
     const existingRoom = await Rooms.findOne({ roomId });
     if (existingRoom) {
       return res.status(400).json({ message: "Room ID already exists. Choose a different one." });
     }
 
-    // Create and save the new room
-    const newRoom = new Rooms({ roomId, password,isSecured });
+    const roomData = { roomId, isSecured };
+    if (isSecured) {
+      roomData.password = password; 
+    }
+
+    const newRoom = new Rooms(roomData);
     await newRoom.save();
 
     res.status(200).json({ message: "Room created successfully", roomId });
@@ -27,21 +29,20 @@ exports.createRoom = async (req, res) => {
 exports.joinRoom = async (req, res) => {
   try {
     const { roomId, password } = req.body;
-    console.log(req.body); // Check if data is received correctly
+    console.log(req.body); 
 
-    // Check if the room exists
     const existingRoom = await Rooms.findOne({ roomId });
     if (!existingRoom) {
       return res.status(404).json({ message: "Room not found" });
     }
 
-    // Verify the password if the room is password-protected
-    if (existingRoom.password && existingRoom.password !== password) {
+    const secure = !!existingRoom.password;
+
+    if (secure && existingRoom.password !== password) {
       return res.status(403).json({ message: "Incorrect password" });
     }
 
-    // If the room exists and password is correct (or not required)
-    res.status(200).json({ message: "Joined room successfully", roomId });
+    res.status(200).json({ message: "Joined room successfully", roomId, secure });
   } catch (error) {
     console.error("Error joining room:", error);
     res.status(500).json({ message: "Failed to join room", error });
