@@ -10,10 +10,12 @@ import {
 } from "@nextui-org/react";
 import axios from "axios";
 import { useState } from "react";
+import useRoomStore from "../../store";
 
 function JoinRoomModal({ isOpen, closeModel }) {
   const [credentials, setCredentials] = useState({ roomId: "", password: "" });
   const [isSecured, setIsSecured] = useState(true);
+  const {setInRoom} = useRoomStore()
   const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({ ...prev, roomId: e.target.value }));
   };
@@ -21,7 +23,7 @@ function JoinRoomModal({ isOpen, closeModel }) {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({ ...prev, password: e.target.value }));
   };
-
+  const {setRoomId} = useRoomStore()
   const handleCreateRoom = async () => {
     try {
       // Send roomId and password to the backend
@@ -33,7 +35,8 @@ function JoinRoomModal({ isOpen, closeModel }) {
 
       if (response.status === 200) {
         console.log("Room created successfully", response.data);
-        // Handle success actions here
+        setRoomId(response.data.roomId)
+        setInRoom(true)
       }
     } catch (error) {
       console.error("Error creating room:", error);
