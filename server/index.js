@@ -1,22 +1,23 @@
 // index.js
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
-const connectDB = require('./db'); 
+const connectDB = require('./db');
 const roomRoutes = require('./routes/roomRoutes'); // Import the room routes
 require('dotenv').config({ path: '.env.local' });
 const cors = require('cors');
+const createSocketServer = require('./socket'); // Import the socket server setup
 
 const serverPort = process.env.SERVER_PORT || 3000;
 const clientPort = process.env.CLIENT_PORT || 5173;
+const clientUrl = process.env.CLIENT_URL;
+
 const app = express();
-app.use(cors()); 
+app.use(cors({
+  origin: '*', // For testing, allow all origins
+}));
+
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: `http://localhost:${clientPort}`,
-  },
-});
+const io = createSocketServer(server); // Create the Socket.io server
 
 // Connect to MongoDB
 connectDB();
@@ -31,25 +32,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-io.on('connection', (socket) => {
-  console.log(`⚡: ${socket.id} user connected`);
-
-  // Join a specific room based on `roomId`
-  socket.on('joinRoom', (roomId) => {
-      socket.join(roomId);
-      console.log(`User ${socket.id} joined room ${roomId}`);
-  });
-
-  // Broadcast new messages to the room
-  socket.on('message', ({ roomId, message, sender }) => {
-    io.to(roomId).emit('message', { message, sender });
-});
-
-  socket.on('disconnect', () => {
-      console.log('🔥: A user disconnected');
-  });
-});
-
 server.listen(serverPort, () => {
-  console.log(`Socket.io server running on port ${serverPort}`);
+  console.log(`Server running on port ${serverPort}`);
 });
