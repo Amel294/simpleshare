@@ -4,8 +4,8 @@ import LoginAndSignup from '../components/LoginAndSignUp/LoginAndSignup';
 import useRoomStore from "../store";
 
 import socketIO from 'socket.io-client';
-const serverPort = import.meta.env.VITE_SERVER_PORT
-const socket = socketIO.connect( `http://localhost:${ serverPort }` );
+const socketURL = import.meta.env.VITE_SOCKET_URL
+const socket = socketIO.connect( socketURL );
 const AppRoutes = () => {
     const { inRoom } = useRoomStore();
 
