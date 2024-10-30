@@ -12,7 +12,7 @@ import ExitRoom from "./ExitRoom";
 export default function Nav() {
   const {inRoom} = useRoomStore();
   return (
-    <Navbar shouldHideOnScroll>
+    <Navbar >
       <NavbarBrand>
         <p className="font-bold text-inherit">SimpleShare</p>
       </NavbarBrand>
