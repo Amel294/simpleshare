@@ -106,7 +106,7 @@ function Home( { socket } ) {
 
       <Nav />
       <div className="pt-10  py-60 mx-auto max-w-screen-lg  sticky ">
-        <div className="sticky top-16  bg-white z-50 ">
+        <div className="sticky top-16  bg-white px-5  z-50 ">
           <div className="flex flex-col pb-2">
             <div className="flex flex-row gap-4 justify-end">
               <div>
