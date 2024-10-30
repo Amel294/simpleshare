@@ -8,9 +8,9 @@ import {
   Input,
   Checkbox,
 } from "@nextui-org/react";
-import axios from "axios";
 import { useState } from "react";
 import useRoomStore from "../../store";
+import axiosInstance from "../../api/axiosInstance";
 
 function JoinRoomModal( { isOpen, closeModel } ) {
   const [credentials, setCredentials] = useState( { roomId: "", password: "" } );
@@ -27,11 +27,11 @@ function JoinRoomModal( { isOpen, closeModel } ) {
   const handleCreateRoom = async () => {
     try {
       // Send roomId and password to the backend
-      const response = await axios.post( "http://localhost:3000/api/rooms/join", {
-        roomId: credentials.roomId,
-        password: credentials.password,
-        passwordIsVisible: passwordIsVisible
-      } );
+     const response = await axiosInstance.post('/rooms/join', {
+      roomId: credentials.roomId,
+      password: credentials.password,
+      passwordIsVisible,
+    });
 
       if ( response.status === 200 ) {
         console.log( "Room created successfully", response.data );

@@ -5,9 +5,9 @@ import CopyIcon from "../../assets/CopyIcon";
 import useRoomStore from "../../store";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
-import axios from "axios";
 import toast from "react-hot-toast";
 import NicknameModal from "../NicknameModal/NicknameModal";
+import axiosInstance from "../../api/axiosInstance";
 
 type Message = {
   message: string;
@@ -81,9 +81,7 @@ function Home( { socket } ) {
   const handleRequestPassword = async () => {
     try {
       toast.success( "Password fetched!" );
-      const response = await axios.get(
-        `http://localhost:3000/api/rooms/${ roomId }/password`
-      );
+      const response = await axiosInstance.get(`/rooms/${roomId}/password`);
 
       if ( response.status === 200 ) {
         setPassword( response.data.password );
@@ -156,7 +154,7 @@ function Home( { socket } ) {
                           aria-label="toggle password visibility"
                         >
                           {isVisible ? (
-                            <EyeSlashFilledIcon className="text-2xl text-default-400" />
+                            <EyeSlashFilledIcon className="text-2xl text-default-400" onClick={handleRequestPassword} />
                           ) : (
                             <EyeFilledIcon className="text-2xl text-default-400" />
                           )}
