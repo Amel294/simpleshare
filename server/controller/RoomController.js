@@ -1,6 +1,7 @@
 // RoomController.js
 
 const Rooms = require("../model/Rooms");
+const crypto = require('crypto');
 
 exports.createRoom = async (req, res) => {
   try {
@@ -64,5 +65,43 @@ exports.getRoomPassword = async (req, res) => {
   } catch (error) {
     console.error("Error retrieving room password:", error);
     res.status(500).json({ message: "Failed to retrieve room password", error });
+  }
+};
+
+const generateRoomId = () => crypto.randomBytes(3).toString('hex'); // 6 characters
+const generatePassword = () => crypto.randomBytes(5).toString('hex'); // 10 characters
+
+exports.generateRoom = async (req, res) => {
+  try {
+    let roomId;
+    let isUnique = false;
+
+    while (!isUnique) {
+      roomId = generateRoomId();
+      const existingRoom = await Rooms.findOne({ roomId });
+      if (!existingRoom) {
+        isUnique = true;
+      }
+    }
+
+    let password = null;
+    console.log(req.body);
+    console.log(req.body.isSecured ? "Password should be generated" : "Password will not be generated");
+    if (req.body.isSecured) {
+      password = generatePassword(); 
+    }
+
+    const newRoom = new Rooms({
+      roomId,
+      password,
+      isSecured: req.body.isSecured,
+    });
+
+    await newRoom.save(); 
+
+    res.status(200).json({ roomId, password, isSecured: req.body.isSecured });
+  } catch (error) {
+    console.error("Error generating room ID and password:", error);
+    res.status(500).json({ message: "Failed to generate room ID and password", error });
   }
 };
