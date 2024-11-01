@@ -99,7 +99,7 @@ exports.generateRoom = async (req, res) => {
 
     await newRoom.save(); 
 
-    res.status(200).json({ roomId, password, isSecured: req.body.isSecured });
+    res.status(200).json({ roomId, isSecured: req.body.isSecured });
   } catch (error) {
     console.error("Error generating room ID and password:", error);
     res.status(500).json({ message: "Failed to generate room ID and password", error });
