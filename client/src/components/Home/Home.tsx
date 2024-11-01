@@ -81,6 +81,7 @@ function Home( { socket } ) {
 
   const handleRequestPassword = async () => {
     try {
+      if(password) return
       toast.success( "Password fetched!" );
       const response = await axiosInstance.get(`/rooms/${roomId}/password`);
 
