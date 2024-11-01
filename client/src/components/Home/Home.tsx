@@ -10,6 +10,7 @@ import NicknameModal from "../NicknameModal/NicknameModal";
 import axiosInstance from "../../api/axiosInstance";
 
 type Message = {
+  roomId :string;
   message: string;
   sender: string;
   self?: boolean;
@@ -86,6 +87,7 @@ function Home( { socket } ) {
       if ( response.status === 200 ) {
         setPassword( response.data.password );
       }
+      
     } catch ( error ) {
       console.error( "Error fetching password:", error );
     }
@@ -153,7 +155,7 @@ function Home( { socket } ) {
                           onClick={toggleVisibility}
                           aria-label="toggle password visibility"
                         >
-                          {isVisible ? (
+                          {!isVisible ? (
                             <EyeSlashFilledIcon className="text-2xl text-default-400" onClick={handleRequestPassword} />
                           ) : (
                             <EyeFilledIcon className="text-2xl text-default-400" />

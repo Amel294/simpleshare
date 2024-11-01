@@ -11,42 +11,52 @@ import {
 import { useState } from "react";
 import useRoomStore from "../../store";
 import axiosInstance from "../../api/axiosInstance";
+import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
+import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
 
-function JoinRoomModal( { isOpen, closeModel } ) {
-  const [credentials, setCredentials] = useState( { roomId: "", password: "" } );
-  const [passwordIsVisible, setPasswordIsVisible] = useState( true );
-  const { setInRoom,setSecure } = useRoomStore()
-  const handleRoomIdChange = ( e: React.ChangeEvent<HTMLInputElement> ) => {
-    setCredentials( ( prev ) => ( { ...prev, roomId: e.target.value } ) );
+function JoinRoomModal({ isOpen, closeModel }) {
+  const [credentials, setCredentials] = useState({ roomId: "", password: "" });
+  const [passwordIsSecure, setPasswordIsSecure] = useState(true); // Determines if the password input is disabled
+  const [passwordVisible, setPasswordVisible] = useState(false); // Toggles password visibility
+
+  const { setInRoom, setSecure, setRoomId } = useRoomStore();
+
+  const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCredentials((prev) => ({ ...prev, roomId: e.target.value }));
   };
 
-  const handlePasswordChange = ( e: React.ChangeEvent<HTMLInputElement> ) => {
-    setCredentials( ( prev ) => ( { ...prev, password: e.target.value } ) );
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCredentials((prev) => ({ ...prev, password: e.target.value }));
   };
-  const { setRoomId } = useRoomStore()
+
   const handleCreateRoom = async () => {
     try {
-      // Send roomId and password to the backend
-     const response = await axiosInstance.post('/rooms/join', {
-      roomId: credentials.roomId,
-      password: credentials.password,
-      passwordIsVisible,
-    });
+      const response = await axiosInstance.post('/rooms/join', {
+        roomId: credentials.roomId,
+        password: credentials.password,
+        passwordIsSecure,
+      });
 
-      if ( response.status === 200 ) {
-        console.log( "Room created successfully", response.data );
-        setRoomId( response.data.roomId )
-        setInRoom( true )
-        setSecure(response.data.secure)
+      if (response.status === 200) {
+        console.log("Room joined successfully", response.data);
+        setRoomId(response.data.roomId);
+        setInRoom(true);
+        setSecure(response.data.secure);
       }
-    } catch ( error ) {
-      console.error( "Error creating room:", error );
-      // Handle error actions here
+    } catch (error) {
+      console.error("Error joining room:", error);
     }
   };
-  const handlePasswordVisibility = () => {
-    setPasswordIsVisible( !passwordIsVisible );
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
+
+  const handleSecureChange = () => {
+    setPasswordIsSecure(!passwordIsSecure);
+    setCredentials((prev) => ({ ...prev, password: "" })); // Clear password when toggling security
+  };
+
   return (
     <div>
       <Modal isOpen={isOpen} onOpenChange={closeModel} placement="center">
@@ -58,8 +68,8 @@ function JoinRoomModal( { isOpen, closeModel } ) {
               </ModalHeader>
               <ModalBody className="text-sm">
                 <p>
-                  If you are logging into a secured room, add the password or
-                  leave the password field empty.
+                  If you are joining a secured room, enter the password, or
+                  check "No password" if the room is unsecured.
                 </p>
                 <Input
                   type="text"
@@ -69,21 +79,34 @@ function JoinRoomModal( { isOpen, closeModel } ) {
                   onChange={handleRoomIdChange}
                 />
                 <Input
-                  type="password"
+                  type={passwordVisible ? "text" : "password"}
                   label="Password"
                   labelPlacement="inside"
                   value={credentials.password}
                   onChange={handlePasswordChange}
-                  isDisabled={!passwordIsVisible}
+                  isDisabled={!passwordIsSecure}
+                  endContent={
+                    <button
+                      className="focus:outline-none"
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      aria-label="toggle password visibility"
+                    >
+                      {passwordVisible ? (
+                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                      ) : (
+                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                      )}
+                    </button>
+                  }
                 />
-                <Checkbox onClick={handlePasswordVisibility}>
+                <Checkbox isSelected={!passwordIsSecure} onChange={handleSecureChange}>
                   No password
                 </Checkbox>
               </ModalBody>
               <ModalFooter>
-
                 <Button color="primary" onClick={handleCreateRoom}>
-                  {`Join ${ !passwordIsVisible ? "Secure" : "Unsecure" } Room`}
+                  {`Join ${passwordIsSecure ? "Secure" : "Unsecure"} Room`}
                 </Button>
               </ModalFooter>
             </>
