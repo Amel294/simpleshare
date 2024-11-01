@@ -123,7 +123,6 @@ function CreateRoomModal({ isOpen, closeModel }) {
                       )}
                     </button>
                   }
-                  className="max-w-xs"
                 />
                 <Checkbox isSelected={!isSecured} onChange={handleSecureChange}>
                   No password
