@@ -8,9 +8,10 @@ import {
 } from "@nextui-org/react";
 import useRoomStore from "../../store";
 import ExitRoom from "./ExitRoom";
+import QrCodeIcon from "../../assets/QrCodeIcon";
 
 export default function Nav() {
-  const {inRoom} = useRoomStore();
+  const { inRoom } = useRoomStore();
   return (
     <Navbar >
       <NavbarBrand>
@@ -28,7 +29,12 @@ export default function Nav() {
           </NavbarItem>
         </NavbarContent>
       ) : (
-        <ExitRoom/>
+        <div className="flex gap-4">
+          <Button as={Link} color="primary" isIconOnly variant="flat">
+            <QrCodeIcon className="w-8"/>
+          </Button>
+          <ExitRoom />
+        </div>
       )}
     </Navbar>
   );
