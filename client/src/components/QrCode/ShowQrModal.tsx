@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   Modal,
@@ -11,7 +11,13 @@ import {
 import useRoomStore from "../../store";
 import axiosInstance from "../../api/axiosInstance";
 
-function ShowQrModal({ isOpen, closeModal }) {
+// Define an interface for the props
+interface ShowQrModalProps {
+  isOpen: boolean;
+  closeModal: () => void;
+}
+
+const ShowQrModal: FC<ShowQrModalProps> = ({ isOpen, closeModal }) => {
   const { roomId, password, secure, setPassword } = useRoomStore();
   const [roomUrl, setRoomUrl] = useState(`www.simpleshare.amelumesh.com/join-room?roomId=${roomId}`);
 

@@ -5,7 +5,7 @@ import useRoomStore from "../store";
 
 import socketIO from 'socket.io-client';
 const socketURL = import.meta.env.VITE_SOCKET_URL
-const socket = socketIO.connect( socketURL );
+const socket = socketIO(socketURL);
 const AppRoutes = () => {
     const { inRoom } = useRoomStore();
 
@@ -14,7 +14,7 @@ const AppRoutes = () => {
 
             <Routes>
 
-                <Route path="/" element={inRoom ? <Home socket={socket} /> : <LoginAndSignup socket={socket} />}></Route>
+                <Route path="/" element={inRoom ? <Home socket={socket} /> : <LoginAndSignup />}></Route>
 
             </Routes>
         </BrowserRouter>

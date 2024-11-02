@@ -13,8 +13,11 @@ import useRoomStore from "../../store";
 import axiosInstance from "../../api/axiosInstance";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
-
-function JoinRoomModal({ isOpen, closeModel }) {
+interface JoinRoomModalProps {
+  isOpen: boolean;
+  closeModel: () => void;
+}
+function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
   const [credentials, setCredentials] = useState({ roomId: "", password: "" });
   const [passwordIsSecure, setPasswordIsSecure] = useState(true); // Determines if the password input is disabled
   const [passwordVisible, setPasswordVisible] = useState(false); // Toggles password visibility

@@ -1,7 +1,11 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import { useState } from "react";
-
-function NicknameModal({ isOpen, closeModal, setNickname }) {
+interface NicknameModalProps {
+  isOpen: boolean;
+  closeModal: () => void;
+  setNickname: (nickname: string) => void;
+}
+function NicknameModal({ isOpen, closeModal, setNickname }:NicknameModalProps) {
   const [inputNickname, setInputNickname] = useState("");
 
   const handleSetNickname = () => {

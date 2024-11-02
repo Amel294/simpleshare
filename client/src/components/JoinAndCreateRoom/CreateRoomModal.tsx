@@ -13,8 +13,11 @@ import axiosInstance from "../../api/axiosInstance";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
 import useRoomStore from "../../store"; // Importing Zustand store
-
-function CreateRoomModal({ isOpen, closeModel }) {
+interface CreateRoomModalProps {
+  isOpen: boolean;
+  closeModel: () => void;
+}
+function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
   const [credentials, setCredentials] = useState({ roomId: "", password: "" });
   const [isSecured, setIsSecured] = useState(true);
   const [passwordVisible, setPasswordVisible] = useState(false);
