@@ -44,7 +44,7 @@ function CreateRoomModal({ isOpen, closeModel }) {
         // Update Zustand store with room details
         setRoomId(response.data.roomId);
         setInRoom(true);
-        setSecure(response.data.secure);
+        setSecure(response.data.isSecured);
       }
     } catch (error) {
       console.error("Error creating room:", error);
