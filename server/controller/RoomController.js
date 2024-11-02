@@ -20,7 +20,7 @@ exports.createRoom = async (req, res) => {
     const newRoom = new Rooms(roomData);
     await newRoom.save();
 
-    res.status(200).json({ message: "Room created successfully", roomId });
+    res.status(200).json({ message: "Room created successfully", roomId ,isSecured});
   } catch (error) {
     console.error("Error creating room:", error);
     res.status(500).json({ message: "Failed to create room", error });
