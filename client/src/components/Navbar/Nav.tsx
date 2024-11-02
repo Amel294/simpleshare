@@ -9,10 +9,17 @@ import {
 import useRoomStore from "../../store";
 import ExitRoom from "./ExitRoom";
 import QrCodeIcon from "../../assets/QrCodeIcon";
+import ShowQrModal from "../QrCode/ShowQrModal";
+import { useState } from "react";
 
 export default function Nav() {
   const { inRoom } = useRoomStore();
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+
+  const openQrModal = () => setIsQrModalOpen(true);
+  const closeQrModal = () => setIsQrModalOpen(false);
   return (
+    <>
     <Navbar >
       <NavbarBrand>
         <p className="font-bold text-inherit">SimpleShare</p>
@@ -31,11 +38,13 @@ export default function Nav() {
       ) : (
         <div className="flex gap-4">
           <Button as={Link} color="primary" isIconOnly variant="flat">
-            <QrCodeIcon className="w-8"/>
+            <QrCodeIcon className="w-8" onClick={openQrModal}/>
           </Button>
           <ExitRoom />
         </div>
       )}
     </Navbar>
+    <ShowQrModal isOpen={isQrModalOpen} closeModal={closeQrModal} />
+      </>
   );
 }
