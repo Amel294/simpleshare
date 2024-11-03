@@ -11,7 +11,6 @@ import {
 import useRoomStore from "../../store";
 import axiosInstance from "../../api/axiosInstance";
 
-// Define an interface for the props
 interface ShowQrModalProps {
   isOpen: boolean;
   closeModal: () => void;
@@ -19,9 +18,13 @@ interface ShowQrModalProps {
 
 const ShowQrModal: FC<ShowQrModalProps> = ({ isOpen, closeModal }) => {
   const { roomId, password, secure, setPassword } = useRoomStore();
-  const [roomUrl, setRoomUrl] = useState(`www.simpleshare.amelumesh.com/join-room?roomId=${roomId}`);
+  const [roomUrl, setRoomUrl] = useState("");
 
   useEffect(() => {
+    const baseUrl = import.meta.env.VITE_BASE_URL; 
+    const initialUrl = `${baseUrl}/join-room?roomId=${roomId}`;
+    setRoomUrl(initialUrl); // Set initial room URL
+
     if (password !== "") return;
     const fetchPassword = async () => {
       let fetchedPassword = password;
@@ -37,7 +40,7 @@ const ShowQrModal: FC<ShowQrModalProps> = ({ isOpen, closeModal }) => {
         }
       }
 
-      setRoomUrl(`www.simpleshare.amelumesh.com/join-room?roomId=${roomId}${fetchedPassword ? `&password=${fetchedPassword}` : ""}`);
+      setRoomUrl(`${baseUrl}/join-room?roomId=${roomId}${fetchedPassword ? `&password=${fetchedPassword}` : ""}`);
     };
 
     fetchPassword();
@@ -54,6 +57,7 @@ const ShowQrModal: FC<ShowQrModalProps> = ({ isOpen, closeModal }) => {
             <ModalBody className="text-sm flex flex-col items-center">
               <p>Scan the QR code to join the room.</p>
               <QRCodeSVG value={roomUrl} size={128} />
+              <p>{roomUrl}</p>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={closeModal}>
