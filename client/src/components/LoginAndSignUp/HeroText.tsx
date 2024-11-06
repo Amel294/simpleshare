@@ -8,12 +8,10 @@ function HeroText() {
             Simple Share
           </h2>
           <p className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
-            Share text and images between devices.
+          Effortless Text Sharing in Real-Time, No Logins Required 
           </p>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Simple share is a room based text and image sharing platform which
-            do not prompt you to sign in to use our service. You can join the
-            same room between devices and share text or images.
+          SimpleShare lets you share messages in real-time without the need for accounts. Join a secure or open room instantly via QR codes, or create a random room for quick collaboration. Whether it's password-protected or open, SimpleShare ensures fast, secure, and hassle-free communication.
           </p>
         </div>
       </div>
