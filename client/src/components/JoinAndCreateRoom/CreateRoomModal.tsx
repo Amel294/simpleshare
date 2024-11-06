@@ -12,17 +12,20 @@ import { useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
-import useRoomStore from "../../store"; // Importing Zustand store
+import useRoomStore from "../../store";
+import { validateRoomId, validatePassword } from "../../utils/validation"; 
+
 interface CreateRoomModalProps {
   isOpen: boolean;
   closeModel: () => void;
 }
-function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
+
+function CreateRoomModal({ isOpen, closeModel }: CreateRoomModalProps) {
   const [credentials, setCredentials] = useState({ roomId: "", password: "" });
   const [isSecured, setIsSecured] = useState(true);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState<{ roomId?: string; password?: string }>({});
 
-  // Zustand store actions
   const { setRoomId, setInRoom, setSecure } = useRoomStore();
 
   const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,18 +36,25 @@ function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
     setCredentials((prev) => ({ ...prev, password: e.target.value }));
   };
 
+  const validateInputs = () => {
+    const roomIdError = validateRoomId(credentials.roomId);
+    const passwordError = validatePassword(credentials.password, isSecured);
+    
+    setErrors({ roomId: roomIdError, password: passwordError });
+    return !roomIdError && !passwordError;
+  };
+
   const handleCreateRoom = async () => {
+    if (!validateInputs()) return;
+
     try {
-      const response = await axiosInstance.post('/rooms/create', {
+      const response = await axiosInstance.post("/rooms/create", {
         roomId: credentials.roomId,
         password: credentials.password,
         isSecured,
       });
 
       if (response.status === 200) {
-        console.log("Room created successfully", response.data);
-
-        // Update Zustand store with room details
         setRoomId(response.data.roomId);
         setInRoom(true);
         setSecure(response.data.isSecured);
@@ -61,16 +71,13 @@ function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
 
   const handleGenerateRandomRoom = async () => {
     try {
-      const response = await axiosInstance.post('/rooms/createrandom', {
+      const response = await axiosInstance.post("/rooms/createrandom", {
         isSecured,
       });
-  
+
       if (response.status === 200) {
-        console.log("Random Room Generated Successfully", response.data);
         const { roomId, password } = response.data;
         setCredentials({ roomId, password });
-
-        // Update Zustand store with random room details
         setRoomId(roomId);
         setInRoom(true);
         setSecure(response.data.isSecured);
@@ -104,7 +111,10 @@ function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
                   labelPlacement="inside"
                   value={credentials.roomId}
                   onChange={handleRoomIdChange}
+                  isInvalid={!!errors.roomId}
+                  errorMessage={errors.roomId}
                 />
+
                 <Input
                   type={passwordVisible ? "text" : "password"}
                   label="Password"
@@ -112,6 +122,8 @@ function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
                   value={credentials.password}
                   onChange={handlePasswordChange}
                   isDisabled={!isSecured}
+                  isInvalid={!!errors.password}
+                  errorMessage={errors.password}
                   endContent={
                     <button
                       className="focus:outline-none"
@@ -127,12 +139,17 @@ function CreateRoomModal({ isOpen, closeModel } : CreateRoomModalProps) {
                     </button>
                   }
                 />
+
                 <Checkbox isSelected={!isSecured} onChange={handleSecureChange}>
                   No password
                 </Checkbox>
               </ModalBody>
               <ModalFooter>
-                <Button color={isSecured ? "primary" : "warning"} variant="ghost" onPress={handleGenerateRandomRoom}> 
+                <Button
+                  color={isSecured ? "primary" : "warning"}
+                  variant="ghost"
+                  onPress={handleGenerateRandomRoom}
+                >
                   {`Create Random ${isSecured ? "Secured" : "Unsecured"} Room`}
                 </Button>
                 <Button color="primary" onPress={handleCreateRoom}>

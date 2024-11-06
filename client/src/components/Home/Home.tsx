@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import NicknameModal from "../NicknameModal/NicknameModal";
 import axiosInstance from "../../api/axiosInstance";
 import { Socket } from "socket.io-client"; 
+import { validateMessage } from "../../utils/validation"; 
+
 type Message = {
   roomId: string;
   message: string;
@@ -23,6 +25,7 @@ interface HomeProps {
 function Home({ socket }: HomeProps) {
   const [data, setData] = useState<Message[]>([]);
   const [text, setText] = useState("");
+  const [messageError, setMessageError] = useState<string>(""); 
   const { roomId, password, setPassword, secure } = useRoomStore();
   const [isVisible, setIsVisible] = useState(false);
   const [nickname, setNickname] = useState("");
@@ -48,6 +51,12 @@ function Home({ socket }: HomeProps) {
   }, [roomId, socket, nickname, data]);
 
   const handleTextSubmit = () => {
+    const error = validateMessage(text); 
+    if (error) {
+      setMessageError(error); 
+      return;
+    }
+
     if (!nickname) {
       setNicknameModalOpen(true);
       return;
@@ -63,6 +72,7 @@ function Home({ socket }: HomeProps) {
     socket.emit('message', messageData);
     setData(prevData => [messageData, ...prevData]);
     setText("");
+    setMessageError(""); 
   };
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -184,6 +194,8 @@ function Home({ socket }: HomeProps) {
                   handleTextSubmit();
                 }
               }}
+              isInvalid={!!messageError} 
+              errorMessage={messageError} 
             />
             <Button
               color="primary"
