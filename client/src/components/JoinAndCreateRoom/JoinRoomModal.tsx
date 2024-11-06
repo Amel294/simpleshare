@@ -13,14 +13,18 @@ import useRoomStore from "../../store";
 import axiosInstance from "../../api/axiosInstance";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
+import { validateRoomId, validatePassword } from "../../utils/validation";
+
 interface JoinRoomModalProps {
   isOpen: boolean;
   closeModel: () => void;
 }
-function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
+
+function JoinRoomModal({ isOpen, closeModel }: JoinRoomModalProps) {
   const [credentials, setCredentials] = useState({ roomId: "", password: "" });
-  const [passwordIsSecure, setPasswordIsSecure] = useState(true); // Determines if the password input is disabled
-  const [passwordVisible, setPasswordVisible] = useState(false); // Toggles password visibility
+  const [passwordIsSecure, setPasswordIsSecure] = useState(true);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState<{ roomId?: string; password?: string }>({});
 
   const { setInRoom, setSecure, setRoomId } = useRoomStore();
 
@@ -32,9 +36,19 @@ function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
     setCredentials((prev) => ({ ...prev, password: e.target.value }));
   };
 
-  const handleCreateRoom = async () => {
+  const validateInputs = () => {
+    const roomIdError = validateRoomId(credentials.roomId);
+    const passwordError = validatePassword(credentials.password, passwordIsSecure);
+
+    setErrors({ roomId: roomIdError, password: passwordError });
+    return !roomIdError && !passwordError;
+  };
+
+  const handleJoinRoom = async () => {
+    if (!validateInputs()) return;
+
     try {
-      const response = await axiosInstance.post('/rooms/join', {
+      const response = await axiosInstance.post("/rooms/join", {
         roomId: credentials.roomId,
         password: credentials.password,
         passwordIsSecure,
@@ -57,7 +71,7 @@ function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
 
   const handleSecureChange = () => {
     setPasswordIsSecure(!passwordIsSecure);
-    setCredentials((prev) => ({ ...prev, password: "" })); // Clear password when toggling security
+    setCredentials((prev) => ({ ...prev, password: "" }));
   };
 
   return (
@@ -80,7 +94,10 @@ function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
                   labelPlacement="inside"
                   value={credentials.roomId}
                   onChange={handleRoomIdChange}
+                  isInvalid={!!errors.roomId}
+                  errorMessage={errors.roomId}
                 />
+
                 <Input
                   type={passwordVisible ? "text" : "password"}
                   label="Password"
@@ -88,6 +105,8 @@ function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
                   value={credentials.password}
                   onChange={handlePasswordChange}
                   isDisabled={!passwordIsSecure}
+                  isInvalid={!!errors.password}
+                  errorMessage={errors.password}
                   endContent={
                     <button
                       className="focus:outline-none"
@@ -103,12 +122,13 @@ function JoinRoomModal({ isOpen, closeModel } : JoinRoomModalProps) {
                     </button>
                   }
                 />
+
                 <Checkbox isSelected={!passwordIsSecure} onChange={handleSecureChange}>
                   No password
                 </Checkbox>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onClick={handleCreateRoom}>
+                <Button color="primary" onClick={handleJoinRoom}>
                   {`Join ${passwordIsSecure ? "Secure" : "Unsecure"} Room`}
                 </Button>
               </ModalFooter>
