@@ -58,7 +58,7 @@ function JoinRoomModal({ isOpen, closeModel }: JoinRoomModalProps) {
         console.log("Room joined successfully", response.data);
         setRoomId(response.data.roomId);
         setInRoom(true);
-        setSecure(response.data.isSecured);
+        setSecure(response.data.secure);
       }
     } catch (error) {
       console.error("Error joining room:", error);
