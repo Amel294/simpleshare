@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useRoomStore from '../../store';
 import { Socket } from 'socket.io-client';
@@ -15,6 +15,9 @@ const JoinRoomViaLink: React.FC<JoinRoomViaLinkProps> = ( { socket } ) => {
     const navigate = useNavigate();
     const { setRoomId, setPassword, setInRoom, setSecure } = useRoomStore();
 
+    const [loading, setLoading] = useState( true );
+    const [error, setError] = useState<string | null>( null );
+
     useEffect( () => {
         const joinRoom = async () => {
             const params = new URLSearchParams( location.search );
@@ -23,24 +26,29 @@ const JoinRoomViaLink: React.FC<JoinRoomViaLinkProps> = ( { socket } ) => {
 
             if ( roomId ) {
                 try {
+                    setLoading( true );
+                    setError( null );
+
                     const response = await axiosInstance.post( '/rooms/join', { roomId, password } );
 
-                    if ( response.data.message === "Joined room successfully" ) {
+                    if ( response.data.message === 'Joined room successfully' ) {
                         setRoomId( roomId );
                         setPassword( password || '' );
                         setInRoom( true );
                         setSecure( response.data.secure );
                         socket.emit( 'joinRoom', { roomId, password } );
-
                         navigate( '/' );
                     } else {
-                        console.error( "Invalid room ID or password:", response.data.message );
+                        console.error( 'Invalid room ID or password:', response.data.message );
                         navigate( '/error' );
                     }
                 } catch ( error ) {
                     const axiosError = error as AxiosError;
-                    console.error( "Failed to join room:", axiosError.response?.data || axiosError.message );
+                    console.error( 'Failed to join room:', axiosError.response?.data || axiosError.message );
+                    setError( 'Failed to join room. Please try again.' );
                     navigate( '/error' );
+                } finally {
+                    setLoading( false );
                 }
             }
         };
@@ -48,13 +56,21 @@ const JoinRoomViaLink: React.FC<JoinRoomViaLinkProps> = ( { socket } ) => {
         joinRoom();
     }, [location, navigate, setRoomId, setPassword, setInRoom, socket] );
 
-    return (
-        <div>
-            <Spinner />
+    if ( loading ) {
+        return (
+            <div className='w-full h-screen flex items-center justify-center'>
+                <Spinner />
+                <p className='ml-2'>Joining the room...</p>
+            </div>
 
-            <p>Joining the room...</p>
-        </div>
-    );
+        );
+    }
+
+    if ( error ) {
+        return <div>{error}</div>;
+    }
+
+    return null;
 };
 
 export default JoinRoomViaLink;
