@@ -26,7 +26,7 @@ function JoinRoomModal({ isOpen, closeModel }: JoinRoomModalProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState<{ roomId?: string; password?: string }>({});
 
-  const { setInRoom, setSecure, setRoomId } = useRoomStore();
+  const { setInRoom, setSecure, setRoomId ,setPassword} = useRoomStore();
 
   const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({ ...prev, roomId: e.target.value }));
@@ -57,6 +57,7 @@ function JoinRoomModal({ isOpen, closeModel }: JoinRoomModalProps) {
       if (response.status === 200) {
         console.log("Room joined successfully", response.data);
         setRoomId(response.data.roomId);
+        setPassword(response.data.password)
         setInRoom(true);
         setSecure(response.data.secure);
       }

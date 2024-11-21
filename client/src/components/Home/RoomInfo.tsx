@@ -2,6 +2,7 @@ import { Input } from "@nextui-org/react";
 import CopyIcon from "../../assets/CopyIcon";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon";
+import useRoomStore from "../../store";
 
 interface RoomInfoProps {
   roomId: string;
@@ -15,13 +16,14 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = ({
   roomId,
-  password,
   secure,
   isVisible,
   toggleVisibility,
   handleRoomCodeCopy,
   handlePasswordCopy,
 }) => {
+  const {  password} = useRoomStore();
+  
   return (
     <div className="flex flex-col pb-2">
       <div className="flex flex-row gap-4 justify-end">

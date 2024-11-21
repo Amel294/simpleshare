@@ -26,7 +26,7 @@ function CreateRoomModal({ isOpen, closeModel }: CreateRoomModalProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState<{ roomId?: string; password?: string }>({});
 
-  const { setRoomId, setInRoom, setSecure } = useRoomStore();
+  const { setRoomId, setInRoom, setSecure ,setPassword} = useRoomStore();
 
   const handleRoomIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({ ...prev, roomId: e.target.value }));
@@ -56,6 +56,7 @@ function CreateRoomModal({ isOpen, closeModel }: CreateRoomModalProps) {
 
       if (response.status === 200) {
         setRoomId(response.data.roomId);
+        setPassword(response.data.password)
         setInRoom(true);
         setSecure(response.data.isSecured);
       }
@@ -78,6 +79,7 @@ function CreateRoomModal({ isOpen, closeModel }: CreateRoomModalProps) {
       if (response.status === 200) {
         const { roomId, password } = response.data;
         setCredentials({ roomId, password });
+        setPassword(password)
         setRoomId(roomId);
         setInRoom(true);
         setSecure(response.data.isSecured);

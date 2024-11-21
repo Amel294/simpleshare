@@ -9,42 +9,28 @@ import {
   Button
 } from "@nextui-org/react";
 import useRoomStore from "../../store";
-import axiosInstance from "../../api/axiosInstance";
 
 interface ShowQrModalProps {
   isOpen: boolean;
   closeModal: () => void;
 }
 
-const ShowQrModal: FC<ShowQrModalProps> = ({ isOpen, closeModal }) => {
+const ShowQrModal: FC<ShowQrModalProps> = ( { isOpen, closeModal } ) => {
   const { roomId, password, secure, setPassword } = useRoomStore();
-  const [roomUrl, setRoomUrl] = useState("");
+  const [roomUrl, setRoomUrl] = useState( "" );
 
-  useEffect(() => {
-    const baseUrl = import.meta.env.VITE_BASE_URL; 
-    const initialUrl = `${baseUrl}/join-room?roomId=${roomId}`;
-    setRoomUrl(initialUrl); // Set initial room URL
+  useEffect( () => {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const initialUrl = `${ baseUrl }/join-room?roomId=${ roomId }`;
+    setRoomUrl( initialUrl ); // Set initial room URL
 
-    if (password !== "") return;
-    const fetchPassword = async () => {
-      let fetchedPassword = password;
-
-      if (secure && !password) {
-        try {
-          const response = await axiosInstance.get(`/rooms/${roomId}/password`);
-          fetchedPassword = response.data.password;
-          setPassword(fetchedPassword); // Update password in Zustand store
-        } catch (error) {
-          console.error("Error fetching password:", error);
-          return;
-        }
-      }
-
-      setRoomUrl(`${baseUrl}/join-room?roomId=${roomId}${fetchedPassword ? `&password=${fetchedPassword}` : ""}`);
-    };
-
-    fetchPassword();
-  }, [roomId, password, secure, setPassword]);
+    if ( secure && password ) {
+      setRoomUrl( `${ baseUrl }/join-room?roomId=${ roomId }${ password ? `&password=${ password }` : "" }` );
+    }
+    else {
+      setRoomUrl( `${ baseUrl }/join-room?roomId=${ roomId }` )
+    }
+  }, [roomId, password, secure, setPassword] );
 
   return (
     <Modal isOpen={isOpen} onOpenChange={closeModal} placement="center">
