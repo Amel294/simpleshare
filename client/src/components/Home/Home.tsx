@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import useRoomStore from "../../store";
 import toast from "react-hot-toast";
 import NicknameModal from "../NicknameModal/NicknameModal";
-import axiosInstance from "../../api/axiosInstance";
 import { Socket } from "socket.io-client";
 import { validateMessage } from "../../utils/validation";
 import RoomInfo from "./RoomInfo";
@@ -24,7 +23,7 @@ function Home( { socket }: HomeProps ) {
   const [data, setData] = useState<Message[]>( [] );
   const [text, setText] = useState( "" );
   const [messageError, setMessageError] = useState<string>( "" );
-  const { roomId, password, setPassword, secure } = useRoomStore();
+  const { roomId, password, secure } = useRoomStore();
   const [isVisible, setIsVisible] = useState( false );
   const [nickname, setNickname] = useState( "" );
   const [isNicknameModalOpen, setNicknameModalOpen] = useState( false );
@@ -86,20 +85,6 @@ function Home( { socket }: HomeProps ) {
       navigator.clipboard.writeText( password ).then( () => {
         toast.success( "Password copied!" );
       } );
-    }
-  };
-
-  const handleRequestPassword = async () => {
-    try {
-      if ( password ) return;
-      toast.success( "Password fetched!" );
-      const response = await axiosInstance.get( `/rooms/${ roomId }/password` );
-
-      if ( response.status === 200 ) {
-        setPassword( response.data.password );
-      }
-    } catch ( error ) {
-      console.error( "Error fetching password:", error );
     }
   };
 
