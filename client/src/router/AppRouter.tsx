@@ -6,8 +6,10 @@ import socketIO from 'socket.io-client';
 import JoinRoomViaLink from '../components/JoinAndCreateRoom/JoinRoomViaLink';
 
 const socketURL = import.meta.env.VITE_SOCKET_URL;
-const socket = socketIO(socketURL);
-
+const socket = socketIO(socketURL, {
+    transports: ['websocket'], 
+  });
+  
 const AppRoutes = () => {
     const { inRoom } = useRoomStore();
 

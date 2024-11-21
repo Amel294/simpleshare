@@ -8,6 +8,7 @@ const createSocketServer = (httpServer) => {
     cors: {
       origin: process.env.SOCKET_CORS_ORIGIN || '*', // Use the origin from the .env file
     },
+    transports: ['websocket']
   });
 
   io.on('connection', (socket) => {
