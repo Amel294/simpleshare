@@ -93,7 +93,7 @@ function Home( { socket }: HomeProps ) {
     toast.success("Copied!", { duration: 500 });
   };
 
-  const urlRegex = /((https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?)/g;
+  const urlRegex = /\b((https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?\b/g;
 
   const containsURL = (message: string) => urlRegex.test(message);
 
