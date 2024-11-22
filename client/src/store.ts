@@ -7,11 +7,13 @@ interface RoomState {
   secure: boolean;
   inRoom: boolean;
   data: string[];
+  nickname: string;
   setRoomId: (roomId: string) => void;
   setPassword: (password: string) => void;
   setSecure: (secure: boolean) => void;
   setInRoom: (inRoom: boolean) => void;
   addData: (text: string) => void;
+  setNickName: (nickname: string) => void;
   clearRoomData: () => void;
 }
 
@@ -37,13 +39,15 @@ const useRoomStore = create<RoomState>()(
         secure: false,
         inRoom: false,
         data: [],
+        nickname: '',
         setRoomId: (roomId) => set(() => ({ roomId }), false, 'room/setRoomId'),
         setPassword: (password) => set(() => ({ password }), false, 'room/setPassword'),
         setSecure: (secure) => set(() => ({ secure }), false, 'room/setSecure'),
         setInRoom: (inRoom) => set(() => ({ inRoom }), false, 'room/setInRoom'),
         addData: (text) => set((state) => ({ data: [...state.data, text] }), false, 'room/addData'),
+        setNickName: (nickname) => set(() => ({ nickname }), false, 'room/setNickName'), // Corrected this
         clearRoomData: () =>
-          set(() => ({ roomId: '', password: '', secure: false, inRoom: false, data: [] }), false, 'room/clearRoomData'),
+          set(() => ({ roomId: '', password: '', secure: false, inRoom: false, data: [], nickname: '' }), false, 'room/clearRoomData'),
       }),
       {
         name: 'room-store',

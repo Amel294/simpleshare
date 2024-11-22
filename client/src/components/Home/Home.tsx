@@ -20,12 +20,12 @@ interface HomeProps {
 }
 
 function Home( { socket }: HomeProps ) {
+  const {nickname,setNickName} = useRoomStore()
   const [data, setData] = useState<Message[]>( [] );
   const [text, setText] = useState( "" );
   const [messageError, setMessageError] = useState<string>( "" );
   const { roomId, password, secure } = useRoomStore();
   const [isVisible, setIsVisible] = useState( false );
-  const [nickname, setNickname] = useState( "" );
   const [isNicknameModalOpen, setNicknameModalOpen] = useState( false );
 
   useEffect( () => {
@@ -107,7 +107,7 @@ function Home( { socket }: HomeProps ) {
       <NicknameModal
         isOpen={isNicknameModalOpen}
         closeModal={() => setNicknameModalOpen( false )}
-        setNickname={setNickname}
+        setNickname={setNickName}
       />
 
       <Nav />
