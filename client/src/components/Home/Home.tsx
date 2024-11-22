@@ -20,7 +20,7 @@ interface HomeProps {
 }
 
 function Home( { socket }: HomeProps ) {
-  const {nickname,setNickName} = useRoomStore()
+  const { nickname, setNickName } = useRoomStore()
   const [data, setData] = useState<Message[]>( [] );
   const [text, setText] = useState( "" );
   const [messageError, setMessageError] = useState<string>( "" );
@@ -88,25 +88,27 @@ function Home( { socket }: HomeProps ) {
     }
   };
 
-  const handleItemCopy = (item: string) => {
-    navigator.clipboard.writeText(item);
-    toast.success("Copied!", { duration: 500 });
+  const handleItemCopy = ( item: string ) => {
+    navigator.clipboard.writeText( item );
+    toast.success( "Copied!", { duration: 500 } );
   };
 
   const urlRegex = /\b((https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?\b/g;
 
-  const containsURL = (message: string) => urlRegex.test(message);
+  const containsURL = ( message: string ) => urlRegex.test( message );
 
-  const extractURL = (message: string) => {
-    const matches = message.match(urlRegex);
-    if (!matches) return [];
-    return matches.map((url) => 
-      url.startsWith("http://") || url.startsWith("https://") 
-        ? url 
-        : `http://${url}` 
-    );
+  const extractURL = ( message: string ) => {
+    const matches = message.match( urlRegex );
+    if ( !matches ) return [];
+    return matches.map( ( url ) => {
+      // Add protocol if missing
+      if ( !url.startsWith( "http://" ) && !url.startsWith( "https://" ) ) {
+        return `https://${ url }`;
+      }
+      return url;
+    } );
   };
-  
+
   return (
     <>
       <NicknameModal
@@ -118,7 +120,7 @@ function Home( { socket }: HomeProps ) {
       <Nav />
       <div className="pt-10 py-60 mx-auto max-w-screen-lg sticky">
         <div className="sticky top-16 bg-white px-5 z-50">
-        <RoomInfo
+          <RoomInfo
             roomId={roomId}
             password={password}
             secure={secure}
@@ -154,43 +156,47 @@ function Home( { socket }: HomeProps ) {
         </div>
 
         <div className="flex flex-col gap-3 pt-100 p-4">
-          {data.map((item, index) => {
-            const url = containsURL(item.message) ? extractURL(item.message) : null;
+          {data.map( ( item, index ) => {
+            const urls = extractURLs( item.message ); // Extract and normalize all URLs
 
             return (
               <div
                 key={index}
-                className={`flex flex-col ${item.self ? "items-end " : "items-start"}`}
-                onClick={() => handleItemCopy(item.message)}
+                className={`flex flex-col ${ item.self ? "items-end " : "items-start" }`}
+                onClick={() => handleItemCopy( item.message )}
               >
                 <div className="flex flex-col items-end w-full">
                   <div className="flex flex-row items-center gap-2 w-full">
-                    <div className={`flex-grow max-w-full ${item.self ? "pl-10" : "pr-10"}`}>
+                    <div className={`flex-grow max-w-full ${ item.self ? "pl-10" : "pr-10" }`}>
                       {item.self && <div className="w-2"></div>}
                       <Textarea
                         label={item.self ? "You" : item.sender}
                         value={item.message}
-                        className={`max-h-24 overflow-auto resize-none ${item.self ? "border-blue-300" : "border-blue-600"} border-2 rounded-xl`}
+                        className={`max-h-24 overflow-auto resize-none ${ item.self ? "border-blue-300" : "border-blue-600" } border-2 rounded-xl`}
                         minRows={1}
                         readOnly
-                        endContent =  {url && (
-                          <Button
-                            color="primary"
-                            size="sm"
-                            onPress={() => window.open(url, "_blank")}
-                            className="flex"
-                          >
-                            Open Link
-                          </Button>
-                        )}
                       />
-                     
+                      {urls.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {urls.map( ( url, idx ) => (
+                            <Button
+                              key={idx}
+                              color="primary"
+                              size="sm"
+                              onPress={() => window.open( url, "_blank" )}
+                            >
+                              Open Link {idx + 1}
+                            </Button>
+                          ) )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             );
-          })}
+          } )}
+
         </div>
       </div>
     </>
