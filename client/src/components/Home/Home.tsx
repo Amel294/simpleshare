@@ -131,7 +131,7 @@ function Home({ socket }: HomeProps) {
               value={text}
               onValueChange={(value) => setText(value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleTextSubmit();
                 }
