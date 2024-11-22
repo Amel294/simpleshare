@@ -95,13 +95,10 @@ function Home( { socket }: HomeProps ) {
 
   const urlRegex = /\b((https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?\b/g;
 
-  const containsURL = ( message: string ) => urlRegex.test( message );
-
   const extractURL = ( message: string ) => {
     const matches = message.match( urlRegex );
     if ( !matches ) return [];
     return matches.map( ( url ) => {
-      // Add protocol if missing
       if ( !url.startsWith( "http://" ) && !url.startsWith( "https://" ) ) {
         return `https://${ url }`;
       }
@@ -157,7 +154,7 @@ function Home( { socket }: HomeProps ) {
 
         <div className="flex flex-col gap-3 pt-100 p-4">
           {data.map( ( item, index ) => {
-            const urls = extractURLs( item.message ); // Extract and normalize all URLs
+            const urls = extractURL( item.message ); 
 
             return (
               <div
