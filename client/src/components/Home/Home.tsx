@@ -19,43 +19,40 @@ interface HomeProps {
   socket: Socket;
 }
 
-function Home( { socket }: HomeProps ) {
-  const { nickname, setNickName } = useRoomStore()
-  const [data, setData] = useState<Message[]>( [] );
-  const [text, setText] = useState( "" );
-  const [messageError, setMessageError] = useState<string>( "" );
+function Home({ socket }: HomeProps) {
+  const { nickname, setNickName } = useRoomStore();
+  const [data, setData] = useState<Message[]>([]);
+  const [text, setText] = useState("");
+  const [messageError, setMessageError] = useState<string>("");
   const { roomId, password, secure } = useRoomStore();
-  const [isVisible, setIsVisible] = useState( false );
-  const [isNicknameModalOpen, setNicknameModalOpen] = useState( false );
+  const [isVisible, setIsVisible] = useState(false);
+  const [isNicknameModalOpen, setNicknameModalOpen] = useState(false);
 
-  useEffect( () => {
-    socket.emit( "joinRoom", roomId );
+  useEffect(() => {
+    socket.emit("joinRoom", roomId);
 
-    socket.on( "message", ( messageData: Message ) => {
+    socket.on("message", (messageData: Message) => {
       const isSelf = messageData.sender === nickname;
 
-      if ( !data.some( msg => msg.message === messageData.message && msg.sender === messageData.sender ) ) {
-        setData( prevData => [
-          { ...messageData, self: isSelf },
-          ...prevData,
-        ] );
+      if (!data.some((msg) => msg.message === messageData.message && msg.sender === messageData.sender)) {
+        setData((prevData) => [{ ...messageData, self: isSelf }, ...prevData]);
       }
-    } );
+    });
 
     return () => {
-      socket.off( "message" );
+      socket.off("message");
     };
-  }, [roomId, socket, nickname, data] );
+  }, [roomId, socket, nickname, data]);
 
   const handleTextSubmit = () => {
-    const error = validateMessage( text );
-    if ( error ) {
-      setMessageError( error );
+    const error = validateMessage(text);
+    if (error) {
+      setMessageError(error);
       return;
     }
 
-    if ( !nickname ) {
-      setNicknameModalOpen( true );
+    if (!nickname) {
+      setNicknameModalOpen(true);
       return;
     }
 
@@ -66,51 +63,51 @@ function Home( { socket }: HomeProps ) {
       self: true,
     };
 
-    socket.emit( 'message', messageData );
-    setData( prevData => [messageData, ...prevData] );
-    setText( "" );
-    setMessageError( "" );
+    socket.emit("message", messageData);
+    setData((prevData) => [messageData, ...prevData]);
+    setText("");
+    setMessageError("");
   };
 
-  const toggleVisibility = () => setIsVisible( !isVisible );
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleRoomCodeCopy = () => {
-    navigator.clipboard.writeText( roomId ).then( () => {
-      toast.success( "Room ID copied!" );
-    } );
+    navigator.clipboard.writeText(roomId).then(() => {
+      toast.success("Room ID copied!");
+    });
   };
 
   const handlePasswordCopy = () => {
-    if ( isVisible ) {
-      navigator.clipboard.writeText( password ).then( () => {
-        toast.success( "Password copied!" );
-      } );
+    if (isVisible) {
+      navigator.clipboard.writeText(password).then(() => {
+        toast.success("Password copied!");
+      });
     }
   };
 
-  const handleItemCopy = ( item: string ) => {
-    navigator.clipboard.writeText( item );
-    toast.success( "Copied!", { duration: 500 } );
+  const handleItemCopy = (item: string) => {
+    navigator.clipboard.writeText(item);
+    toast.success("Copied!", { duration: 500 });
   };
 
   const urlRegex = /\b((https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?\b/g;
 
-  const extractURL = ( message: string ) => {
-    const matches = message.match( urlRegex );
-    if ( !matches ) return [];
-    return matches.map( ( url ) => {
-      if ( !url.startsWith( "http://" ) && !url.startsWith( "https://" ) ) {
-        return `https://${ url }`;
+  const extractURL = (message: string): string[] => {
+    const matches = message.match(urlRegex);
+    if (!matches) return [];
+    return matches.map((url) => {
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        return `https://${url}`;
       }
       return url;
-    } );
+    });
   };
 
   return (
     <>
       <NicknameModal
         isOpen={isNicknameModalOpen}
-        closeModal={() => setNicknameModalOpen( false )}
+        closeModal={() => setNicknameModalOpen(false)}
         setNickname={setNickName}
       />
 
@@ -132,9 +129,9 @@ function Home( { socket }: HomeProps ) {
               placeholder="Enter your message"
               size="lg"
               value={text}
-              onValueChange={( value ) => setText( value )}
-              onKeyDown={( e ) => {
-                if ( e.key === 'Enter' ) {
+              onValueChange={(value) => setText(value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
                   e.preventDefault();
                   handleTextSubmit();
                 }
@@ -142,49 +139,47 @@ function Home( { socket }: HomeProps ) {
               isInvalid={!!messageError}
               errorMessage={messageError}
             />
-            <Button
-              color="primary"
-              className="mt-4 w-full"
-              onPress={handleTextSubmit}
-            >
+            <Button color="primary" className="mt-4 w-full" onPress={handleTextSubmit}>
               Send
             </Button>
           </div>
         </div>
 
         <div className="flex flex-col gap-3 pt-100 p-4">
-          {data.map( ( item, index ) => {
-            const urls = extractURL( item.message ); 
+          {data.map((item, index) => {
+            const urls = extractURL(item.message);
 
             return (
               <div
                 key={index}
-                className={`flex flex-col ${ item.self ? "items-end " : "items-start" }`}
-                onClick={() => handleItemCopy( item.message )}
+                className={`flex flex-col ${item.self ? "items-end " : "items-start"}`}
+                onClick={() => handleItemCopy(item.message)}
               >
                 <div className="flex flex-col items-end w-full">
                   <div className="flex flex-row items-center gap-2 w-full">
-                    <div className={`flex-grow max-w-full ${ item.self ? "pl-10" : "pr-10" }`}>
+                    <div className={`flex-grow max-w-full ${item.self ? "pl-10" : "pr-10"}`}>
                       {item.self && <div className="w-2"></div>}
                       <Textarea
                         label={item.self ? "You" : item.sender}
                         value={item.message}
-                        className={`max-h-24 overflow-auto resize-none ${ item.self ? "border-blue-300" : "border-blue-600" } border-2 rounded-xl`}
+                        className={`max-h-24 overflow-auto resize-none ${
+                          item.self ? "border-blue-300" : "border-blue-600"
+                        } border-2 rounded-xl`}
                         minRows={1}
                         readOnly
                       />
                       {urls.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-2">
-                          {urls.map( ( url, idx ) => (
+                          {urls.map((url: string, idx: number) => (
                             <Button
                               key={idx}
                               color="primary"
                               size="sm"
-                              onPress={() => window.open( url, "_blank" )}
+                              onPress={() => window.open(url, "_blank")}
                             >
                               Open Link {idx + 1}
                             </Button>
-                          ) )}
+                          ))}
                         </div>
                       )}
                     </div>
@@ -192,8 +187,7 @@ function Home( { socket }: HomeProps ) {
                 </div>
               </div>
             );
-          } )}
-
+          })}
         </div>
       </div>
     </>
