@@ -88,9 +88,18 @@ function Home( { socket }: HomeProps ) {
     }
   };
 
-  const handleItemCopy = ( item: string ) => {
-    navigator.clipboard.writeText( item );
-    toast.success( "Copied!", { duration: 500 } );
+  const handleItemCopy = (item: string) => {
+    navigator.clipboard.writeText(item);
+    toast.success("Copied!", { duration: 500 });
+  };
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  const containsURL = (message: string) => urlRegex.test(message);
+
+  const extractURL = (message: string) => {
+    const matches = message.match(urlRegex);
+    return matches ? matches[0] : '';
   };
 
   return (
@@ -140,28 +149,43 @@ function Home( { socket }: HomeProps ) {
         </div>
 
         <div className="flex flex-col gap-3 pt-100 p-4">
-          {data.map( ( item, index ) => (
-            <div
-              key={index}
-              className={`flex flex-col ${ item.self ? "items-end " : "items-start" }`}
-              onClick={() => handleItemCopy( item.message )}
-            >
-              <div className="flex flex-col items-end w-full">
-                <div className="flex flex-row items-center gap-2 w-full">
-                  <div className={`flex-grow max-w-full ${ item.self ? "pl-10" : "pr-10" }`}>
-                    {item.self && <div className="w-2"></div>}
-                    <Textarea
-                      label={item.self ? "You" : item.sender}
-                      value={item.message}
-                      className={`max-h-24 overflow-auto resize-none ${ item.self ? "border-blue-300" : "border-blue-600" } border-2 rounded-xl`}
-                      minRows={1}
-                      readOnly
-                    />
+          {data.map((item, index) => {
+            const url = containsURL(item.message) ? extractURL(item.message) : null;
+
+            return (
+              <div
+                key={index}
+                className={`flex flex-col ${item.self ? "items-end " : "items-start"}`}
+                onClick={() => handleItemCopy(item.message)}
+              >
+                <div className="flex flex-col items-end w-full">
+                  <div className="flex flex-row items-center gap-2 w-full">
+                    <div className={`flex-grow max-w-full ${item.self ? "pl-10" : "pr-10"}`}>
+                      {item.self && <div className="w-2"></div>}
+                      <Textarea
+                        label={item.self ? "You" : item.sender}
+                        value={item.message}
+                        className={`max-h-24 overflow-auto resize-none ${item.self ? "border-blue-300" : "border-blue-600"} border-2 rounded-xl`}
+                        minRows={1}
+                        readOnly
+                        endContent =  {url && (
+                          <Button
+                            color="primary"
+                            size="sm"
+                            onPress={() => window.open(url, "_blank")}
+                            className="flex"
+                          >
+                            Open Link
+                          </Button>
+                        )}
+                      />
+                     
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ) )}
+            );
+          })}
         </div>
       </div>
     </>
