@@ -99,9 +99,14 @@ function Home( { socket }: HomeProps ) {
 
   const extractURL = (message: string) => {
     const matches = message.match(urlRegex);
-    return matches ? matches[0] : '';
+    if (!matches) return [];
+    return matches.map((url) => 
+      url.startsWith("http://") || url.startsWith("https://") 
+        ? url 
+        : `http://${url}` 
+    );
   };
-
+  
   return (
     <>
       <NicknameModal
