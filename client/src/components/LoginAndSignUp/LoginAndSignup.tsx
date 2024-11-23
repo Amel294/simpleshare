@@ -5,7 +5,7 @@ import Nav from "../Navbar/Nav";
 const LoginAndSignup = () => {
   return (
     <>
-    <div className="min-h-screen bg-white">
+    <div className="max-h-screen bg-white">
       <Nav/>
       <HeroText/>
       <Buttons />
