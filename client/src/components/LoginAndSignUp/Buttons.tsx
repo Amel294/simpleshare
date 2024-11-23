@@ -26,9 +26,9 @@ function Buttons() {
 
   return (
     <div className="bg-white">
-      <div className="flex flex-col gap-4 items-center pt-2">
-        <JoinRoomButton openJoinRoomModal={openJoinRoomModel} />
+      <div className="flex  flex-col gap-4 items-center py-2 portrait:py-10">
         <CreateRoomButton openCreateRoomModal={openCreateRoomModel} />
+        <JoinRoomButton openJoinRoomModal={openJoinRoomModel} />
         <JoinRoomModal isOpen={joinRoomModel} closeModel={closeJoinRoomModel} />
         <CreateRoomModal isOpen={createRoomModel} closeModel={closeCreateRoomModel} />
       </div>
