@@ -12,12 +12,9 @@ const createSocketServer = (httpServer) => {
   });
 
   io.on('connection', (socket) => {
-    console.log(`⚡: ${socket.id} user connected`);
 
-    // Join a specific room based on `roomId`
     socket.on('joinRoom', (roomId) => {
       socket.join(roomId);
-      console.log(`User ${socket.id} joined room ${roomId}`);
     });
 
     // Broadcast new messages to the room
@@ -26,7 +23,6 @@ const createSocketServer = (httpServer) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('🔥: A user disconnected');
     });
   });
 

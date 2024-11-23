@@ -6,7 +6,6 @@ const crypto = require('crypto');
 exports.createRoom = async (req, res) => {
   try {
     const { roomId, password, isSecured } = req.body;
-    console.log(req.body); 
     const existingRoom = await Rooms.findOne({ roomId });
     if (existingRoom) {
       return res.status(400).json({ message: "Room ID already exists. Choose a different one." });
@@ -30,8 +29,6 @@ exports.createRoom = async (req, res) => {
 exports.joinRoom = async (req, res) => {
   try {
     const { roomId, password } = req.body;
-    console.log(req.body); 
-
     const existingRoom = await Rooms.findOne({ roomId });
     if (!existingRoom) {
       return res.status(404).json({ message: "Room not found" });
@@ -52,7 +49,6 @@ exports.joinRoom = async (req, res) => {
 exports.getRoomPassword = async (req, res) => {
   try {
     const { roomId } = req.params;
-    console.log(roomId)
     // Find the room by ID
     const room = await Rooms.findOne({ roomId });
     if (!room) {
@@ -84,8 +80,6 @@ exports.generateRoom = async (req, res) => {
     }
 
     let password = null;
-    console.log(req.body);
-    console.log(req.body.isSecured ? "Password should be generated" : "Password will not be generated");
     if (req.body.isSecured) {
       password = generatePassword(); 
     }
